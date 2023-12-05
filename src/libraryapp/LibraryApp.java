@@ -14,11 +14,11 @@ import java.util.Scanner;
  */
 public class LibraryApp {
 
-    private static String url = "jdbc:postgresql://localhost:5432/library";
+    private static String url = "jdbc:postgresql://localhost:5432/FinalProject";
     private static String username = "postgres";
-    private static String pwd = "";
+    private static String pwd = "KT2me369121518";
 
-    public static void login() {
+    public static User login() {
         Scanner scan = new Scanner(System.in);
         // login / create account
         System.out.println("Welcome to the the library!");
@@ -29,29 +29,55 @@ public class LibraryApp {
             action = scan.nextLine();
         }
         if (action.equalsIgnoreCase("L")) {
-            // login stuff
+            System.out.print("Please enter email: ");
+                String email = scan.nextLine().strip();
+                System.out.print("Please enter password: ");
+                String password = scan.nextLine().strip();
+                User user = new User();
+                user.email = email;
+                user.password = password;
+                if (user.loginUser()){
+                    System.out.println("Login successful!");
+                    return user;
+                }
+                else{
+                    System.out.println("Invalid login credentials");
+                    return login();
+                }
         }
-        else if (action.equalsIgnoreCase("C")) {
-            // create user stuff
-            //prompts user to login after creating an account
-            login();
+        else  {
+            User newUser = new User();
+            System.out.print("Enter first name: ");
+            newUser.firstname = scan.nextLine().strip();
+            System.out.print("Enter last name: ");
+            newUser.lastname = scan.nextLine().strip();
+            System.out.print("Enter email: ");
+            newUser.email = scan.nextLine().strip();
+            System.out.print("Enter password: ");
+            newUser.password = scan.nextLine().strip();
+            newUser.registerUser();
+            return login();
         }
     }
     
     // possibly make this recursive at some point or call it until it returns Q in main
-    public static String homepage() {
+    public static String homepage(User user) {
         Scanner scan = new Scanner(System.in);
+        System.out.println("Hello, "+user.firstname+" "+user.lastname);
         System.out.println("---------------------------");
         System.out.println("1) Browse all books");
         System.out.println("2) Browse by author");
         System.out.println("3) Browse by genre");
         System.out.println("4) View your books");
         System.out.println("5) Return book");
+        System.out.println("6) Edit information");
+        System.out.println("7) Delete profile");
         System.out.println("Q) Exit");
         System.out.println("Enter selection: ");
         String selection = scan.nextLine();
         while (!(selection.equals("1") || selection.equals("2") || selection.equals("3") ||
-             selection.equals("4") || selection.equals("5") || selection.equalsIgnoreCase("Q")))
+             selection.equals("4") || selection.equals("5") || selection.equals("6") || 
+                selection.equals("7") || selection.equalsIgnoreCase("Q")))
         {
             System.out.println("Enter selection: ");
             selection = scan.nextLine();
@@ -80,14 +106,47 @@ public class LibraryApp {
         }
     }
     
+     public static void EditUser(User user)
+    {
+        Scanner scan = new Scanner(System.in);
+        System.out.print("Please enter your new first name "
+                                + "(or press enter without typing to keep it the same): ");
+        String newFname = scan.nextLine().strip();
+        if (newFname.equals("")){
+            newFname = user.firstname;
+        }
+        System.out.print("Please enter your new last name "
+                                + "(or press enter without typing to keep it the same): ");
+        String newLname = scan.nextLine().strip();
+        if (newLname.equals("")){
+            newLname = user.lastname;
+        }
+        System.out.print("Please enter your new email "
+                                + "(or press enter without typing to keep it the same): ");
+        String newEmail = scan.nextLine().strip();
+        if (newEmail.equals("")){
+            newEmail = user.email;
+        }
+        System.out.println("Name: "+newFname+" "+newLname);
+        System.out.println("Email: "+newEmail);
+        System.out.print("Confirm update by typing Y, or type N to go back.");
+        String confirm = scan.nextLine();
+        if (confirm.equalsIgnoreCase("y")){
+            user.firstname = newFname;
+            user.lastname = newLname;
+            user.email = newEmail;
+            user.updateUserDetails();
+        }
+    }
+     
     public static void main(String[] args) {
-        
+        DatabaseManager.setConnection();
         Scanner scan = new Scanner(System.in);
         
         // login or create account
-        login();
+        User user = login();
         
-        String action = homepage();
+        String action = homepage(user);
         
         while (!action.equalsIgnoreCase("Q"))
         {
@@ -108,12 +167,24 @@ public class LibraryApp {
             else if  (action.equals("4")) {
                 
             }
-            else if  (action.equals("4")) {
+            else if  (action.equals("5")) {
                 
             }
-            action = homepage();
+            else if  (action.equals("6")) {
+                EditUser(user);
+            }
+            else if  (action.equals("7")) {
+                System.out.println("Are you sure you would like to delete your profile?"); 
+                System.out.print("Confirm by typing Y, or type N to go back.");
+                String confirm = scan.nextLine();
+                if (confirm.equalsIgnoreCase("y")){
+                    user.deleteUser();
+                    user = login();
+                    }
+            }
+            action = homepage(user);
         }
-        
+        DatabaseManager.closeConnection();
     }
     
 }
