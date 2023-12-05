@@ -11,7 +11,7 @@ import java.sql.*;
 public class DatabaseManager {
     private static String url = "jdbc:postgresql://localhost:5432/FinalProject";
     private static String username = "postgres";
-    private static String pwd = "KT2me369121518";
+    private static String pwd = "";
     private static Connection connection;
     public static void setConnection(){
         try{
