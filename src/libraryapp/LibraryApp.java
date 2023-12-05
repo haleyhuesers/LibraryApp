@@ -16,7 +16,7 @@ public class LibraryApp {
 
     private static String url = "jdbc:postgresql://localhost:5432/FinalProject";
     private static String username = "postgres";
-    private static String pwd = "KT2me369121518";
+    private static String pwd = "";
 
     public static User login() {
         Scanner scan = new Scanner(System.in);
