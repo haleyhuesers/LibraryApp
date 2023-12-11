@@ -9,7 +9,7 @@ import java.sql.*;
  * @author Ligia
  */
 public class DatabaseManager {
-    private static String url = "jdbc:postgresql://localhost:5432/FinalProject";
+    private static String url = "jdbc:postgresql://localhost:5432/library";
     private static String username = "postgres";
     private static String pwd = "";
     private static Connection connection;

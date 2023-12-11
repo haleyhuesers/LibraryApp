@@ -7,12 +7,7 @@ import java.sql.*;
  * @author hhues
  */
 public class Author {
-    
-    private static String url = "jdbc:postgresql://localhost:5432/library";
-    private static String username = "postgres";
-    private static String pwd = "";
-
-    
+        
     private int authorId;
     private String firstName;
     private String lastName;
@@ -31,7 +26,7 @@ public class Author {
     private void retrieveAuthorInfoFromDatabase() {
         String selectQuery = "SELECT firstName, lastName FROM author WHERE authorId = ?";
 
-        try (Connection connection = DriverManager.getConnection(url, username, pwd);
+        try (Connection connection = DatabaseManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(selectQuery)) {
 
             preparedStatement.setInt(1, this.authorId);
@@ -52,7 +47,7 @@ public class Author {
     public void updateAuthorInfoInDatabase() {
         String updateQuery = "UPDATE author SET firstName = ?, lastName = ? WHERE authorId = ?";
 
-        try (Connection connection = DriverManager.getConnection(url, username, pwd);
+        try (Connection connection = DatabaseManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(updateQuery)) {
 
             preparedStatement.setString(1, this.firstName);
@@ -98,7 +93,7 @@ public class Author {
     public void addAuthor() {
         String insertQuery = "INSERT INTO author (authorid, firstname, lastname) VALUES (?, ?, ?)";
         try {
-        Connection connection = DriverManager.getConnection(url, username, pwd);
+        Connection connection = DatabaseManager.getConnection();
 
         PreparedStatement stmt = connection.prepareStatement(insertQuery); 
 
@@ -122,7 +117,7 @@ public class Author {
         // Fetch and display books written by the author from the database
         String selectQuery = "SELECT b.title, b.bookid FROM book b WHERE b.authorId = ?";
         
-        try (Connection connection = DriverManager.getConnection(url, username, pwd);
+        try (Connection connection = DatabaseManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(selectQuery)) {
 
             preparedStatement.setInt(1, this.authorId);

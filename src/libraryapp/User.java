@@ -23,6 +23,31 @@ public class User {
     public User(){
     }
     
+    public int getId() {
+        int userIdFromDatabase = -1; // Default value if user is not found
+
+        try (Connection connection = DatabaseManager.getConnection();) {
+            String sql = "SELECT userID FROM users WHERE firstName = ? AND lastName = ? AND email = ? AND password = ?";
+
+            try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+                preparedStatement.setString(1, this.firstname);
+                preparedStatement.setString(2, this.lastname);
+                preparedStatement.setString(3, this.email);
+                preparedStatement.setString(4, this.password);
+
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    if (resultSet.next()) {
+                        userIdFromDatabase = resultSet.getInt("userID");
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return userIdFromDatabase;
+    }
+    
     public void fillUser(){
         String findUser = "Select * from Users where userID = ?";
         try{

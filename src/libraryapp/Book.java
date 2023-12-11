@@ -7,10 +7,6 @@ import java.sql.*;
  */
 public class Book {
     
-    private static String url = "jdbc:postgresql://localhost:5432/library";
-    private static String username = "postgres";
-    private static String pwd = "";
-    
     private int bookId;
     private String title;
     private int authorId;
@@ -31,7 +27,7 @@ public class Book {
     private void retrieveBookInfoFromDatabase() {
         String selectQuery = "SELECT title, authorId, numAvailable FROM book WHERE bookId = ?";
         
-        try (Connection connection = DriverManager.getConnection(url, username, pwd);
+        try (Connection connection = DatabaseManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(selectQuery)) {
 
             preparedStatement.setInt(1, this.bookId);
@@ -52,7 +48,7 @@ public class Book {
     public void updateBookInfoInDatabase() {
         String updateQuery = "UPDATE book SET title = ?, authorId = ?, numAvailable = ? WHERE bookId = ?";
 
-        try (Connection connection = DriverManager.getConnection(url, username, pwd);
+        try (Connection connection = DatabaseManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(updateQuery)) {
 
             preparedStatement.setString(1, this.title);
@@ -109,7 +105,7 @@ public class Book {
         String insertQuery = "INSERT INTO book (bookid, title, numavailable, authorid) VALUES (?, ?, ?, ?)";
 
         try {
-            Connection connection = DriverManager.getConnection(url, username, pwd);
+            Connection connection = DatabaseManager.getConnection();
 
             PreparedStatement stmt = connection.prepareStatement(insertQuery); 
         

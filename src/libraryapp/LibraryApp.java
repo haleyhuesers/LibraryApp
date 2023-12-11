@@ -15,10 +15,6 @@ import java.util.Scanner;
  */
 public class LibraryApp {
 
-    private static String url = "jdbc:postgresql://localhost:5432/library";
-    private static String username = "postgres";
-    private static String pwd = "";
-
     public static User login() {
         Scanner scan = new Scanner(System.in);
         // login / create account
@@ -87,11 +83,11 @@ public class LibraryApp {
     }
     
     public static void listAllAuthors() {
-        System.out.println("List of all authors:");
+        System.out.println("Authors:");
 
         String selectQuery = "SELECT authorId, firstName, lastName FROM author";
 
-        try (Connection connection = DriverManager.getConnection(url, username, pwd);
+        try (Connection connection = DatabaseManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(selectQuery);
              ResultSet resultSet = preparedStatement.executeQuery()) {
 
@@ -103,10 +99,52 @@ public class LibraryApp {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace(); // Handle the exception properly in a real-world scenario
+            e.printStackTrace();
         }
     }
     
+    public static void listAllBooks() {
+        System.out.println("Books:");
+
+        String selectQuery = "SELECT bookid, title FROM book";
+
+        try (Connection connection = DatabaseManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(selectQuery);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+
+            while (resultSet.next()) {
+                String title = resultSet.getString("title");
+                String id = resultSet.getString("bookid");
+                System.out.println(id + ") " + title);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
+//public static void listCheckedOutBooks(User user) {
+//        try (Connection connection = DatabaseManager.getConnection()) {
+//        String sql = "SELECT b.* FROM book b " +
+//                     "JOIN checked_out co ON b.bookID = co.bookID " +
+//                     "WHERE co.userID = ?";
+//
+//        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+//            preparedStatement.setInt(1, user.getId());
+//
+//            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+//                while (resultSet.next()) {
+//                    int bookID = resultSet.getInt("bookID");
+//                    String title = resultSet.getString("title");
+//                    System.out.println(bookID + ") " + title);
+//                }
+//            }
+//        }
+//    } catch (SQLException e) {
+//        e.printStackTrace();
+//    }
+//}    
+
      public static void EditUser(User user)
     {
         Scanner scan = new Scanner(System.in);
@@ -163,7 +201,7 @@ public class LibraryApp {
     } 
     private static int getGenreIdByName(String genreName) {
         String selectQuery = "SELECT genreid FROM genre WHERE genrename = ?";
-        try (Connection connection = DriverManager.getConnection(url, username, pwd);
+        try (Connection connection = DatabaseManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(selectQuery)) {
 
             preparedStatement.setString(1, genreName);
@@ -191,7 +229,10 @@ public class LibraryApp {
         while (!action.equalsIgnoreCase("Q"))
         {
             if (action.equals("1")) {
-                
+                listAllBooks();
+                System.out.println("Enter selection: ");
+                int selection = scan.nextInt();
+                // do checkout stuff
             }
             else if (action.equals("2")) {
                 listAllAuthors();
@@ -206,7 +247,7 @@ public class LibraryApp {
                 break;
             }
             else if  (action.equals("4")) {
-                
+               // listCheckedOutBooks(user);
             }
             else if  (action.equals("5")) {
                 
@@ -226,6 +267,7 @@ public class LibraryApp {
             action = homepage(user);
         }
         DatabaseManager.closeConnection();
+        System.exit(0);
     }
     
 }

@@ -9,10 +9,6 @@ import java.util.List;
  */
 public class Genre {
     
-    private static final String URL = "jdbc:postgresql://localhost:5432/library";
-    private static final String USERNAME = "postgres";
-    private static final String PASSWORD = "";
-    
     private int genreId;
     private String name;
     
@@ -25,7 +21,7 @@ public class Genre {
     public void retrieveGenreInfoFromDatabase() {
         String selectQuery = "SELECT name FROM genre WHERE genreId = ?";
         
-        try (Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+        try (Connection connection = DatabaseManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(selectQuery)) {
 
             preparedStatement.setInt(1, this.genreId);
@@ -44,7 +40,7 @@ public class Genre {
     public void updateGenreInfoInDatabase() {
         String updateQuery = "UPDATE genre SET name = ? WHERE genreId = ?";
 
-        try (Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+        try (Connection connection = DatabaseManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(updateQuery)) {
 
             preparedStatement.setString(1, this.name);
