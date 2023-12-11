@@ -6,6 +6,7 @@
 package libraryapp;
 
 import java.sql.*;
+import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -14,7 +15,7 @@ import java.util.Scanner;
  */
 public class LibraryApp {
 
-    private static String url = "jdbc:postgresql://localhost:5432/FinalProject";
+    private static String url = "jdbc:postgresql://localhost:5432/library";
     private static String username = "postgres";
     private static String pwd = "";
 
@@ -139,6 +140,45 @@ public class LibraryApp {
         }
     }
      
+    public static void browseByGenre() 
+    {
+        Scanner scan = new Scanner(System.in);
+        System.out.println("Enter genre name to browse books: ");
+        String genreName = scan.nextLine().trim();
+
+        // Find the genre ID based on the genre name
+        int genreId = getGenreIdByName(genreName);
+        if (genreId == -1) {
+            System.out.println("Genre not found.");
+            return;
+        }
+
+        Genre genre = new Genre(genreId, genreName);
+        genre.retrieveGenreInfoFromDatabase();
+        System.out.println("Books in the genre: " + genreName);
+        List<Book> books = genre.listBooksByGenre();
+        for (Book book : books) {
+            System.out.println(book.getBookId() + ": " + book.getTitle() + " by Author ID " + book.getAuthorId());
+        }
+    } 
+    private static int getGenreIdByName(String genreName) {
+        String selectQuery = "SELECT genreid FROM genre WHERE genrename = ?";
+        try (Connection connection = DriverManager.getConnection(url, username, pwd);
+             PreparedStatement preparedStatement = connection.prepareStatement(selectQuery)) {
+
+            preparedStatement.setString(1, genreName);
+
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    return resultSet.getInt("genreid");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1; // Return an invalid ID if not found
+    }
+    
     public static void main(String[] args) {
         DatabaseManager.setConnection();
         Scanner scan = new Scanner(System.in);
@@ -162,7 +202,8 @@ public class LibraryApp {
                 // do checkout stuff
             }
             else if  (action.equals("3")) {
-                
+                browseByGenre();
+                break;
             }
             else if  (action.equals("4")) {
                 
